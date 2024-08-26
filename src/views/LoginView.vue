@@ -18,12 +18,13 @@
   
   <script setup>
   import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   
   const username = ref('')
   const password = ref('')
   const errorMessage = ref(null)
   const router = useRouter()
+  const route = useRoute()
   
   const handleLogin = () => {
     // Hardcoded credentials for demonstration purposes
@@ -32,7 +33,7 @@
   
     if (username.value === validUsername && password.value === validPassword) {
       localStorage.setItem('isAuthenticated', 'true')
-      router.push('/about')  // Redirect to the About page after successful login
+      router.push(route.query.redirect || '/about')
     } else {
       errorMessage.value = 'Invalid username or password'
     }

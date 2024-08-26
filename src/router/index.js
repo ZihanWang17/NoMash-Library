@@ -33,7 +33,6 @@ const router = createRouter({
   routes
 })
 
-// Navigation guard to check authentication
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
 
