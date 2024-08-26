@@ -9,7 +9,8 @@ const formData = ref({
   confirmPassword: '',
   isAustralian: false,
   reason: '',
-  gender: ''
+  gender: '',
+  suburb: 'Clayton' // Add suburb field with default value
 })
 
 const submittedCards = ref([])
@@ -32,7 +33,8 @@ const clearForm = () => {
     confirmPassword: '',
     isAustralian: false,
     reason: '',
-    gender: ''
+    gender: '',
+    suburb: 'Clayton' // Reset the suburb field as well
   }
 }
 
@@ -97,7 +99,6 @@ const validateReason = (blur) => {
     feedbackMessage.value = '';
   }
 }
-
 const feedbackMessage = ref('');
 </script>
 
@@ -149,18 +150,18 @@ const feedbackMessage = ref('');
             </div>
 
             <div class="col-md-6 col-sm-6">
-    <label for="confirm-password" class="form-label">Confirm password</label>
-    <input
-        type="password"
-        class="form-control"
-        id="confirm-password"
-        v-model="formData.confirmPassword"
-        @blur="() => validateConfirmPassword(true)"
-    />
-    <div v-if="errors.confirmPassword" class="text-danger">
-        {{ errors.confirmPassword }}
-    </div>
-</div>
+              <label for="confirm-password" class="form-label">Confirm password</label>
+              <input
+                  type="password"
+                  class="form-control"
+                  id="confirm-password"
+                  v-model="formData.confirmPassword"
+                  @blur="() => validateConfirmPassword(true)"
+              />
+              <div v-if="errors.confirmPassword" class="text-danger">
+                  {{ errors.confirmPassword }}
+              </div>
+            </div>
           </div>
 
           <div class="row mb-3">
@@ -190,6 +191,18 @@ const feedbackMessage = ref('');
             <div v-if="errors.reason" class="text-danger">{{ errors.reason }}</div>
             <div v-if="feedbackMessage" class="text-success">{{ feedbackMessage }}</div>
           </div>
+
+          <!-- Suburb Field -->
+          <div class="mb-3">
+            <label for="suburb" class="form-label">Suburb</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="suburb" 
+              v-model="formData.suburb" 
+            />
+          </div>
+
           <div class="text-center">
             <button type="submit" class="btn btn-primary me-2">Submit</button>
             <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
@@ -207,6 +220,7 @@ const feedbackMessage = ref('');
       <Column field="isAustralian" header="Australian Resident"></Column>
       <Column field="gender" header="Gender"></Column>
       <Column field="reason" header="Reason"></Column>
+      <Column field="suburb" header="Suburb"></Column> <!-- Add suburb column to the datatable -->
     </DataTable>
   </div>
 
@@ -219,7 +233,7 @@ const feedbackMessage = ref('');
         style="width: 18rem"
       >
         <div class="card-header">User Information</div>
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush"> </ul>
           <li class="list-group-item">Username: {{ card.username }}</li>
           <li class="list-group-item">Password: {{ card.password }}</li>
           <li class="list-group-item">
@@ -227,11 +241,12 @@ const feedbackMessage = ref('');
           </li>
           <li class="list-group-item">Gender: {{ card.gender }}</li>
           <li class="list-group-item">Reason: {{ card.reason }}</li>
-        </ul>
+          <li class="list-group-item">Suburb: {{ card.suburb }}</li>
+         </div>
+        </div>
       </div>
-    </div>
-  </div>
 </template>
+
 
 <style scoped>
 .container {

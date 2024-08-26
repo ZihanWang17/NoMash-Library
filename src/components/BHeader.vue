@@ -1,18 +1,52 @@
 <template>
-  <!-- Using Bootstrap's Header template (starter code) -->
-  <!-- https://getbootstrap.com/docs/5.0/examples/headers/ -->
-  <div class="container">
-    <header class="d-flex justify-content-center py-3">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a href="#" class="nav-link active" aria-current="page">Home (Week 4)</a>
-        </li>
-        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="#" class="nav-link">Contact us</a></li>
-      </ul>
-    </header>
-  </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Home (Week 5)</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <router-link class="nav-link" to="/">Home</router-link>
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" to="/about">About</router-link>
+          </li>
+          <li class="nav-item" v-if="!isAuthenticated">
+            <router-link class="nav-link" to="/login">Login</router-link>
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <a class="nav-link" href="#" @click="logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const isAuthenticated = ref(localStorage.getItem('isAuthenticated') === 'true')
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem('isAuthenticated')
+  isAuthenticated.value = false
+  router.push('/login')
+}
+</script>
+
 
 <style scoped>
 .b-example-divider {
