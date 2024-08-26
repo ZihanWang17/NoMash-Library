@@ -17,7 +17,9 @@ const submittedCards = ref([])
 const submitForm = () => {
   validateName(true)
   validatePassword(true)
-  if (!errors.value.username && !errors.value.password) {
+  validateConfirmPassword(true)
+  validateReason(true) // Validate reason here
+  if (!errors.value.username && !errors.value.password && !errors.value.confirmPassword && !errors.value.reason) {
     submittedCards.value.push({ ...formData.value })
     clearForm()
   }
@@ -27,6 +29,7 @@ const clearForm = () => {
   formData.value = {
     username: '',
     password: '',
+    confirmPassword: '',
     isAustralian: false,
     reason: '',
     gender: ''
@@ -58,18 +61,6 @@ const validatePassword = (blur) => {
   const hasNumber = /\d/.test(password)
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
 
-  /**
- * Confirm password validation function that checks if the password and confirm password fields match.
- * @param blur: boolean - If true, the function will display an error message if the passwords do not match.
- */
-const validateConfirmPassword = (blur) => {
-  if (formData.value.password !== formData.value.confirmPassword) {
-    if (blur) errors.value.confirmPassword = 'Passwords do not match.'
-  } else {
-    errors.value.confirmPassword = null
-  }
-}
-
   if (password.length < minLength) {
     if (blur) errors.value.password = `Password must be at least ${minLength} characters long.`
   } else if (!hasUppercase) {
@@ -84,17 +75,39 @@ const validateConfirmPassword = (blur) => {
     errors.value.password = null
   }
 }
+
+const validateConfirmPassword = (blur) => {
+  if (formData.value.password !== formData.value.confirmPassword) {
+    if (blur) errors.value.confirmPassword = 'Passwords do not match.'
+  } else {
+    errors.value.confirmPassword = null
+  }
+}
+
+const validateReason = (blur) => {
+  const reason = formData.value.reason.trim();
+  if (reason.length < 10) {
+    if (blur) errors.value.reason = 'Reason must be more than 10 characters.'
+  } else {
+    errors.value.reason = null;
+  }
+  if (reason.toLowerCase().includes('friend')) {
+    feedbackMessage.value = 'Great to have a friend';
+  } else {
+    feedbackMessage.value = '';
+  }
+}
+
+const feedbackMessage = ref('');
 </script>
 
 <template>
-  <!-- 🗄️ W3. Library Registration Form -->
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-8 offset-md-2">
-        <h1 class="text-center">🗄️ W4. Library Registration Form</h1>
+        <h1 class="text-center">🗄️ W5. Library Registration Form</h1>
         <p class="text-center">
-          This form now includes validation. Registered users are displayed in a data table below
-          (PrimeVue).
+          Let's build some more advanced features into our form.
         </p>
         <form @submit.prevent="submitForm">
           <div class="row mb-3">
@@ -112,6 +125,17 @@ const validateConfirmPassword = (blur) => {
             </div>
 
             <div class="col-md-6 col-sm-6">
+              <label for="gender" class="form-label">Gender</label>
+              <select class="form-select" id="gender" v-model="formData.gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6 col-sm-6">
               <label for="password" class="form-label">Password</label>
               <input
                 type="password"
@@ -123,6 +147,7 @@ const validateConfirmPassword = (blur) => {
               />
               <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
             </div>
+
             <div class="col-md-6 col-sm-6">
     <label for="confirm-password" class="form-label">Confirm password</label>
     <input
@@ -137,6 +162,7 @@ const validateConfirmPassword = (blur) => {
     </div>
 </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-md-6 col-sm-6">
               <div class="form-check">
@@ -149,15 +175,8 @@ const validateConfirmPassword = (blur) => {
                 <label class="form-check-label" for="isAustralian">Australian Resident?</label>
               </div>
             </div>
-            <div class="col-md-6 col-sm-6">
-              <label for="gender" class="form-label">Gender</label>
-              <select class="form-select" id="gender" v-model="formData.gender" required>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
           </div>
+
           <div class="mb-3">
             <label for="reason" class="form-label">Reason for joining</label>
             <textarea
@@ -165,7 +184,11 @@ const validateConfirmPassword = (blur) => {
               id="reason"
               rows="3"
               v-model="formData.reason"
+              @blur="() => validateReason(true)"
+              @input="() => validateReason(false)"
             ></textarea>
+            <div v-if="errors.reason" class="text-danger">{{ errors.reason }}</div>
+            <div v-if="feedbackMessage" class="text-success">{{ feedbackMessage }}</div>
           </div>
           <div class="text-center">
             <button type="submit" class="btn btn-primary me-2">Submit</button>
