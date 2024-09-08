@@ -27,6 +27,9 @@
           <li class="nav-item" v-if="isAuthenticated">
             <a class="nav-link" href="#" @click="logout">Logout</a>
           </li>
+          <li class="nav-item">
+            <router-link  to="/Firelogin" class="nav-link" active-class="active">Firebase Login</router-link>
+          </li>
         </ul>
       </div>
     </div>
