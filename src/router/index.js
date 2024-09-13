@@ -4,8 +4,14 @@ import AboutView from '../views/AboutView.vue'
 import LoginView from '../views/LoginView.vue'
 import AccessDeniedView from '../views/AccessDeniedView.vue'
 import FirebaseSigninView from '@/views/FirebaseSigninView.vue'
+import AddBookView from '@/views/AddBookView.vue'
 
 const routes = [
+  {
+    path: '/addBook',
+    name: 'AddBook',
+    component: AddBookView
+  },
   {
     path: '/FireLogin',
     name: 'FireLogin',
