@@ -7,25 +7,30 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-const {onRequest} = require("firebase-functions/v2/https");
-const admin = require("firebase-admin");
-const cors = require("cors")({origin: true});
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { initializeApp } = require('firebase-admin/app');
 
-admin.initializeApp();
+initializeApp();
 
-exports.countBooks = onRequest((req, res) => {
-  cors(req, res, async () => {
-    try {
-      const booksCollection = admin.firestore().collection("books");
-      const snapshot = await booksCollection.get();
-      const count = snapshot.size;
+exports.capitalizeBookData = onDocumentCreated('books/{bookId}', async (event) => {
+  const snap = event.data;
+  const data = snap.data();
+  const capitalizedData = {};
 
-      res.status(200).send({count});
-    } catch (error) {
-      console.error("Error counting books:", error.message);
-      res.status(500).send("Error counting books");
+  for (const key in data) {
+    if (typeof data[key] === 'string') {
+      capitalizedData[key] = data[key].toUpperCase();
+    } else {
+      capitalizedData[key] = data[key];
     }
-  });
+  }
+
+  try {
+    await snap.ref.update(capitalizedData);
+    console.log(`Document ${snap.id} capitalized successfully.`);
+  } catch (error) {
+    console.error('Error capitalizing data:', error.message);
+  }
 });
 
 // Create and deploy your first functions
