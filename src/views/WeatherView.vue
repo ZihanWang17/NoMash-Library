@@ -15,32 +15,31 @@
   
       <!-- The <main> tag in HTML is used to specify the main content of a document -->
       <main>
-        <!-- If there are no data returned, then skip rendering the information -->
+        <!-- If there is no data returned, then skip rendering the information -->
         <div v-if="weatherData">
-          <!-- Display the weather data attribute returned from API -->
+          <!-- Display the weather data attributes returned from API -->
           <h2>
             {{ weatherData.name }}, {{ weatherData.sys.country }}
           </h2>
           <div>
-            <!-- The image source of the weather icon will be coming from a function called iconUrl -->
+            <!-- Display the weather icon -->
             <img :src="iconUrl" alt="Weather Icon" />
             <p>{{ temperature }} °C</p>
           </div>
-          <!-- weather[0] means the current weather, the way we need to obtain data depends on how the API JSON data looks -->
+          <!-- Display the weather description -->
           <span>{{ weatherData.weather[0].description }}</span>
         </div>
       </main>
     </div>
   </template>
-
-<script>
-  // The info section in 10.1.1 provided detailed information about this package
+  
+  <script>
   import axios from "axios";
-
-  const apikey = "48ce56b4caaf32b8f46c2c393e54917d";
-
+  
+  const apikey = "48ce56b4caaf32b8f46c2c393e54917d"; 
+  
   export default {
-    name: "App",
+    name: "WeatherView",
     data() {
       return {
         city: "",
@@ -49,58 +48,119 @@
         dailyForecast: [],
       };
     },
-    // computed is a property that is used to define a property that
-    // is dependent on other data properties.
-    // The derived value such as temperature automatically updates when the relevant value changes.
     computed: {
-      // There are multiple ways to obtain the data in Celsius format.
-      // Calculation by yourself like below after data is retrieved or via API parameters
-
-      // Example of adding additional units requirement, if you choose this, remember to change section 3.1
-      // https://api.openweathermap.org/data/2.5/weather?lat=XXX&lon=-XXX.15&appid={API key}&units=metric
       temperature() {
         return this.weatherData
-          ? Math.floor(this.weatherData.main.temp - 273)
+          ? Math.round(this.weatherData.main.temp)
           : null;
       },
-      // Get the current weather icon using the API link
       iconUrl() {
         return this.weatherData
-          ? `http://api.openweathermap.org/img/w/${this.weatherData.weather[0].icon}.png`
+          ? `https://openweathermap.org/img/wn/${this.weatherData.weather[0].icon}@2x.png`
           : null;
       },
     },
-    // There are two steps involved in this,
-    // step 1: identify current location
-    // step 2: after identifying, get the weather data straight based on the current location.
     mounted() {
       this.fetchCurrentLocationWeather();
     },
     methods: {
-      // Async means the method will run in the background thread,
-      // and it won't occupy the main thread, so the user experience is still smooth
       async fetchCurrentLocationWeather() {
-        // The navigator.geolocation object is part of the Web API provided by modern web browsers
-        // Please note this function does not belong to Vue or OpenWeather.
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(async (position) => {
-            const { latitude, longitude } = position.coords;
-            // API link to obtain the current weather based on the current location identified by the browser
-            const url = `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apikey}`;
-            // await means wait for the fetchWeatherData method to complete before proceeding
-            await this.fetchWeatherData(url);
-          });
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const { latitude, longitude } = position.coords;
+              const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apikey}&units=metric`;
+              await this.fetchWeatherData(url);
+            },
+            (error) => {
+              console.error("Error fetching location:", error);
+              alert("Unable to retrieve your location.");
+            }
+          );
+        } else {
+          alert("Geolocation is not supported by this browser.");
         }
       },
       async fetchWeatherData(url) {
         try {
           const response = await axios.get(url);
-          // Returned data from API is stored as a JSON object in weatherData
           this.weatherData = response.data;
         } catch (error) {
           console.error("Error fetching weather data:", error);
+          alert("Error fetching weather data. Please try again.");
         }
       },
-    }, 
-  }; 
-</script>
+      async searchByCity() {
+        if (this.city.trim() === "") {
+          alert("Please enter a city name.");
+          return;
+        }
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+          this.city
+        )}&appid=${apikey}&units=metric`;
+        await this.fetchWeatherData(url);
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .header {
+    text-align: center;
+  }
+  
+  .search-bar {
+    margin-top: 20px;
+  }
+  
+  .search-input {
+    width: calc(100% - 100px);
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .search-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #42b983;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .search-button:hover {
+    background-color: #369870;
+  }
+  
+  main {
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  img {
+    width: 100px;
+    height: 100px;
+  }
+  
+  p {
+    font-size: 20px;
+    margin: 10px 0;
+  }
+  
+  span {
+    font-size: 18px;
+    color: #555;
+  }
+  </style>
