@@ -7,9 +7,11 @@ import FirebaseSigninView from '@/views/FirebaseSigninView.vue'
 import AddBookView from '@/views/AddBookView.vue'
 import CountBookAPI from '@/views/CountBookAPI.vue'
 import WeatherView from '@/views/WeatherView.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
-const routes = [
-  {
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes:[{
     path: '/WeatherCheck',
     name: 'WeatherCheck',
     component: WeatherView
@@ -49,12 +51,7 @@ const routes = [
     path: '/access-denied',
     name: 'AccessDenied',
     component: AccessDeniedView
-  }
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
+  }]
 })
 
 router.beforeEach((to, from, next) => {
