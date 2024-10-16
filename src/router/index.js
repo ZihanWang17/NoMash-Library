@@ -8,53 +8,51 @@ import AddBookView from '@/views/AddBookView.vue'
 import CountBookAPI from '@/views/CountBookAPI.vue'
 import WeatherView from '@/views/WeatherView.vue'
 
-const routes = [
-  {
-    path: '/WeatherCheck',
-    name: 'WeatherCheck',
-    component: WeatherView
-  },
-  {
-    path:'/CountBookAPI',
-    name:'CountBookAPI',
-    component: CountBookAPI
-  },
-  {
-    path: '/addBook',
-    name: 'AddBook',
-    component: AddBookView
-  },
-  {
-    path: '/FireLogin',
-    name: 'FireLogin',
-    component: FirebaseSigninView
-  },
-  {
-    path: '/',  // Added missing comma here
-    name: 'Home',
-    component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: AboutView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: LoginView
-  },
-  {
-    path: '/access-denied',
-    name: 'AccessDenied',
-    component: AccessDeniedView
-  }
-]
-
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  history: createWebHistory(process.env.BASE_URL),
+  routes: [
+    {
+      path: '/WeatherCheck',
+      name: 'WeatherCheck',
+      component: WeatherView
+    },
+    {
+      path:'/CountBookAPI',
+      name:'CountBookAPI',
+      component: CountBookAPI
+    },
+    {
+      path: '/addBook',
+      name: 'AddBook',
+      component: AddBookView
+    },
+    {
+      path: '/FireLogin',
+      name: 'FireLogin',
+      component: FirebaseSigninView
+    },
+    {
+      path: '/',  // Added missing comma here
+      name: 'Home',
+      component: HomeView
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: AboutView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: LoginView
+    },
+    {
+      path: '/access-denied',
+      name: 'AccessDenied',
+      component: AccessDeniedView
+    }
+  ]
 })
 
 router.beforeEach((to, from, next) => {
